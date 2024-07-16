@@ -1,0 +1,67 @@
+#Category 1 - Category  2 - Category 3 is keywords for one database that I am researching
+I left it this way to preserve the data for future publication in the newspaper.
+
+import pandas as pd
+import plotly.graph_objects as go
+
+# Filtrando as linhas que contêm a palavra 'Category1'
+Category1 = twitter[twitter['Content of posts'].str.contains('Category1', case=False)].reset_index(drop=True)
+Category1 = Category1.rename(columns={'Content of posts': 'Category1'})
+
+# Filtrando as linhas que contêm a palavra 'category2'
+category2 = twitter[twitter['Content of posts'].str.contains('category2', case=False)].reset_index(drop=True)
+category2 = category2.rename(columns={'Content of posts': 'category2'})
+
+# Filtrando as linhas que contêm a palavra 'category3'
+category3 = twitter[twitter['Content of posts'].str.contains('category3', case=False)].reset_index(drop=True)
+category3 = category3.rename(columns={'Content of posts': 'category3'})
+
+# Criando uma tabela combinada com as três colunas lado a lado
+combined_table = pd.concat([Category1, category2, category3], axis=1)
+
+# Salvando a tabela combinada em um arquivo Excel
+combined_table.to_excel('combined_table.xlsx', index=False)
+
+# Contando as ocorrências de cada palavra-chave
+word_counts = {
+    'Category1': len(Category1),
+    'category2': len(category2),
+    'category3': len(category3)
+}
+
+# Convertendo para um DataFrame
+word_counts_df = pd.DataFrame(list(word_counts.items()), columns=['Keyword', 'Recurrence'])
+
+# Definindo as cores específicas para cada palavra-chave
+colors = {
+    'Category1': '#545454',
+    'category2': '#A6A6A6',
+    'category3': '#D9D9D9'
+}
+
+# Criando um gráfico de barras com cores personalizadas usando Plotly Graph Objects
+fig = go.Figure(data=[
+    go.Bar(
+        x=word_counts_df['Keyword'],
+        y=word_counts_df['Recurrence'],
+        marker_color=[colors[keyword] for keyword in word_counts_df['Keyword']],
+        text=word_counts_df['Recurrence'],
+        textposition='auto'
+    )
+])
+
+# Adicionando título e legendas aos eixos
+fig.update_layout(
+    title={
+        'text': 'Recurrence of Keywords',
+        'y': 0.9,
+        'x': 0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'
+    },
+    xaxis_title="Keyword",
+    yaxis_title="Recurrence"
+)
+
+# Exibindo o gráfico
+fig.show()
